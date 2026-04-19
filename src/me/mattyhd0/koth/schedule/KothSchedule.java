@@ -18,6 +18,10 @@ public class KothSchedule {
 
     }
 
+    public String getKothId() {
+        return kothId;
+    }
+
     public Koth getKoth() {
         return KoTHPlugin.getInstance().getKothManager().getKothByID(kothId);
     }

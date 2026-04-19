@@ -6,15 +6,16 @@ import me.mattyhd0.koth.manager.koth.KothManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.YMLFile;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.time.*;
-import java.util.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ScheduleManager {
 
@@ -76,8 +77,21 @@ public class ScheduleManager {
 
     public KothSchedule getNextKothSchedule(){
 
-        if(this.incomingKoths.size() == 0) return null;
-        return incomingKoths.getFirst();
+        while (!incomingKoths.isEmpty()) {
+            KothSchedule next = incomingKoths.getFirst();
+
+            if (next.getKoth() != null) {
+                return next;
+            }
+
+            KoTHPlugin.getInstance().getLogger().warning(
+                    "Skipping scheduled koth '" + next.getKothId() + "' because it is not loaded. " +
+                            "Verify the koth id exists and the world is available."
+            );
+            incomingKoths.removeFirst();
+        }
+
+        return null;
 
     }
 
@@ -89,28 +103,37 @@ public class ScheduleManager {
 
         private final KoTHPlugin plugin;
         private final KothManager kothManager;
-        private final ScheduleManager scheduleManager;
 
         public Task(){
             plugin = KoTHPlugin.getInstance();
             kothManager = plugin.getKothManager();
-            scheduleManager = plugin.getScheduleManager();
         }
 
 
         @Override
         public void run() {
 
+            ScheduleManager scheduleManager = plugin.getScheduleManager();
+
+            if(System.currentTimeMillis() > scheduleManager.initTime+MillisUtil.DAY) {
+                plugin.setScheduleManager(new ScheduleManager());
+                return;
+            }
+
             KothSchedule kothSchedule = scheduleManager.getNextKothSchedule();
 
             if(kothSchedule == null) return;
 
-            if(System.currentTimeMillis() > scheduleManager.initTime+MillisUtil.DAY) KoTHPlugin.getInstance().setScheduleManager(new ScheduleManager());
-
             if(System.currentTimeMillis() > kothSchedule.getStartMillis() && kothManager.getCurrectKoth() == null){
 
                 if(Bukkit.getOnlinePlayers().size() >= Config.getScheduleFile().get().getInt("options.minimum-players")){
-                    kothSchedule.getKoth().start();
+                    Koth koth = kothSchedule.getKoth();
+                    if (koth != null) {
+                        koth.start();
+                    } else {
+                        scheduleManager.incomingKoths.removeFirst();
+                        return;
+                    }
                 }
                 scheduleManager.incomingKoths.removeFirst();
 

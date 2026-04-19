@@ -3,6 +3,7 @@ package me.mattyhd0.koth.placeholderapi;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.playeable.CurrentKoth;
+import me.mattyhd0.koth.schedule.KothSchedule;
 import me.mattyhd0.koth.schedule.ScheduleManager;
 import me.mattyhd0.koth.util.Config;
 import me.mattyhd0.koth.util.Util;
@@ -31,6 +32,7 @@ public class KoTHPlaceholder extends PlaceholderExpansion {
         KoTHPlugin plugin = KoTHPlugin.getInstance();
         CurrentKoth currentKoth = plugin.getKothManager().getCurrectKoth();
         ScheduleManager scheduleManager = plugin.getScheduleManager();
+        KothSchedule nextSchedule = scheduleManager.getNextKothSchedule();
 
         switch (params){
 
@@ -49,9 +51,9 @@ public class KoTHPlaceholder extends PlaceholderExpansion {
             case "current_king":
                 return currentKoth == null ? "" : (currentKoth.getKing() != null ? currentKoth.getKing().getName() : Util.color(Config.getConfig().getString("koth-in-progress.king-null-placeholder")));
             case "schedule_next_name":
-                return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getKoth().getDisplayName();
+                return (nextSchedule == null || nextSchedule.getKoth() == null) ? "" : nextSchedule.getKoth().getDisplayName();
             case "schedule_next_time":
-                return scheduleManager.getNextKothSchedule() == null ? "" : scheduleManager.getNextKothSchedule().getFormattedTimeLeft();
+                return nextSchedule == null ? "" : nextSchedule.getFormattedTimeLeft();
             default:
                 return "";
 
