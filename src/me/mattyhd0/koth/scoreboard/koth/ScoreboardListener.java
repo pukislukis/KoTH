@@ -1,6 +1,5 @@
 package me.mattyhd0.koth.scoreboard.koth;
 
-import com.xism4.sternalboard.SternalBoard;
 import me.mattyhd0.koth.KoTHPlugin;
 import me.mattyhd0.koth.scoreboard.hook.sternalboard.SternalBoardHook;
 import org.bukkit.entity.Player;
@@ -16,7 +15,9 @@ public class ScoreboardListener implements Listener {
 
         Player player = event.getPlayer();
         KoTHPlugin plugin = KoTHPlugin.getInstance();
-        if(plugin.getScoreboardHook() instanceof SternalBoardHook && plugin.getKothManager().getCurrectKoth() != null) SternalBoard.getInstance().getScoreboardManager().removeScoreboard(player);
+        if(plugin.getScoreboardHook() instanceof SternalBoardHook && plugin.getKothManager().getCurrectKoth() != null) {
+            ((SternalBoardHook) plugin.getScoreboardHook()).removeBoard(player);
+        }
 
     }
 

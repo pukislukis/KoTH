@@ -25,7 +25,7 @@ public class WinEffect {
                 World world = player.getWorld();
                 Location location = player.getLocation();
 
-                Firework firework = (Firework) world.spawnEntity(location, EntityType.FIREWORK);
+                Firework firework = (Firework) world.spawnEntity(location, EntityType.FIREWORK_ROCKET);
                 FireworkMeta fireworkMeta = firework.getFireworkMeta();
 
                 fireworkMeta.setPower(1);

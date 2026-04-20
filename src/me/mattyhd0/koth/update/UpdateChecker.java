@@ -1,7 +1,6 @@
 package me.mattyhd0.koth.update;
 
 import com.google.gson.Gson;
-import com.sun.istack.internal.NotNull;
 import org.bukkit.plugin.Plugin;
 
 import java.io.BufferedReader;
@@ -17,7 +16,7 @@ public class UpdateChecker {
     private SpigotResource spigotResource;
     private String latestVersion;
 
-    public UpdateChecker(@NotNull Plugin plugin, int spigotResourceId){
+    public UpdateChecker(Plugin plugin, int spigotResourceId){
 
         try {
 
